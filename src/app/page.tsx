@@ -22,6 +22,7 @@ export default function Home() {
             {nombre:"Letreros Neón",icono:"💡"},
             {nombre:"Acrílico",icono:"🪟"},
             {nombre:"Glorificadores",icono:"✨"}
+          
           ].map((s) => (
             <div key={s.nombre} className="bg-[#1A1A1A] border border-[#29ABE2] rounded-2xl p-6 text-center hover:border-[#F15A24] transition">
               <div className="text-5xl mb-3">{s.icono}</div>
