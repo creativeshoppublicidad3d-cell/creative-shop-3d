@@ -2,64 +2,51 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="bg-[#1A1A1A] min-h-screen text-white">
+      <section className="flex flex-col items-center justify-center text-center px-6 py-20">
+        <Image src="/logo.png" alt="Creative Shop 3D" width={220} height={220} priority />
+        <h1 className="text-4xl font-bold mt-6">
+          <span className="text-[#29ABE2]">Creative</span> <span className="text-[#F15A24]">Shop 3D</span>
+        </h1>
+        <p className="text-gray-300 mt-4">Soluciones visuales que hacen brillar tu marca</p>
+        <div className="flex gap-4 mt-8">
+          <a href="https://wa.me/527711951579" target="_blank" className="bg-[#39B54A] text-white font-bold px-8 py-4 rounded-full">WhatsApp</a>
+          <a href="https://m.me/CreativeShopTulancingo" target="_blank" className="bg-[#29ABE2] text-white font-bold px-8 py-4 rounded-full">Messenger</a>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+      <section className="px-6 py-16 bg-[#111111]">
+        <h2 className="text-3xl font-bold text-center mb-12">Nuestros <span className="text-[#F15A24]">Servicios</span></h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          {[
+            {nombre:"Letras 3D",icono:"🔠"},
+            {nombre:"Letreros Neón",icono:"💡"},
+            {nombre:"Acrílico",icono:"🪟"},
+            {nombre:"Glorificadores",icono:"✨"}
+          ].map((s) => (
+            <div key={s.nombre} className="bg-[#1A1A1A] border border-[#29ABE2] rounded-2xl p-6 text-center hover:border-[#F15A24] transition">
+              <div className="text-5xl mb-3">{s.icono}</div>
+              <p className="font-semibold text-lg">{s.nombre}</p>
+            </div>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="px-6 py-16">
+        <h2 className="text-3xl font-bold text-center mb-10">¿Listo para <span className="text-[#39B54A]">cotizar?</span></h2>
+        <form className="max-w-lg mx-auto flex flex-col gap-4">
+          <input type="text" placeholder="Tu nombre" className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+          <input type="tel" placeholder="Tu teléfono" className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+          <textarea placeholder="¿Qué necesitas?" rows={4} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+          <button type="submit" className="bg-[#F15A24] hover:bg-orange-600 text-white font-bold py-4 rounded-full text-lg transition">Enviar cotización</button>
+        </form>
+        
+      </section>
+
+      <footer className="bg-[#111111] text-center py-8 text-gray-400 text-sm">
+        <p>© 2025 Creative Shop 3D · Tulancingo, Hidalgo</p>
+        <a href="https://www.facebook.com/CreativeShopTulancingo" className="text-[#29ABE2] hover:underline mt-2 block" target="_blank">Facebook</a>
+      </footer>
+
+    </main>
   );
 }
