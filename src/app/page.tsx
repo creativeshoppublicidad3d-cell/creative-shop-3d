@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main className="bg-[#1A1A1A] min-h-screen text-white">
       <section className="flex flex-col items-center justify-center text-center px-6 py-20">
-        <Image src="/logo.png" alt="Creative Shop 3D" width={220} height={220} priority />
+        <Image src="/LOGO.png" alt="Creative Shop 3D" width={220} height={220} priority />
         <h1 className="text-4xl font-bold mt-6">
           <span className="text-[#29ABE2]">Creative</span> <span className="text-[#F15A24]">Shop 3D</span>
         </h1>
@@ -39,7 +39,7 @@ export default function Home() {
           <textarea placeholder="¿Qué necesitas?" rows={4} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
           <button type="submit" className="bg-[#F15A24] hover:bg-orange-600 text-white font-bold py-4 rounded-full text-lg transition">Enviar cotización</button>
         </form>
-        
+
       </section>
 
       <footer className="bg-[#111111] text-center py-8 text-gray-400 text-sm">
