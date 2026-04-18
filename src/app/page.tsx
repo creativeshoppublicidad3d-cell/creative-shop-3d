@@ -7,6 +7,10 @@ import { supabase } from "@/lib/supabase";
 export default function Home() {
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [negocio, setNegocio] = useState("");
+  const [queVende, setQueVende] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [productoInteres, setProductoInteres] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [cargando, setCargando] = useState(false);
@@ -16,12 +20,11 @@ export default function Home() {
     setCargando(true);
     const { error } = await supabase
       .from("leads")
-      .insert([{ nombre, telefono, mensaje }]);
+      .insert([{ nombre, telefono, negocio, que_vende: queVende, ciudad, producto_interes: productoInteres, mensaje }]);
     if (!error) {
       setEnviado(true);
-      setNombre("");
-      setTelefono("");
-      setMensaje("");
+      setNombre(""); setTelefono(""); setNegocio("");
+      setQueVende(""); setCiudad(""); setProductoInteres(""); setMensaje("");
     }
     setCargando(false);
   }
@@ -67,9 +70,19 @@ export default function Home() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex flex-col gap-4">
-            <input type="text" placeholder="Tu nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
-            <input type="tel" placeholder="Tu teléfono" value={telefono} onChange={(e) => setTelefono(e.target.value)} required className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
-            <textarea placeholder="¿Qué necesitas?" rows={4} value={mensaje} onChange={(e) => setMensaje(e.target.value)} required className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+            <input type="text" placeholder="Tu nombre *" value={nombre} onChange={(e) => setNombre(e.target.value)} required className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+            <input type="tel" placeholder="Tu teléfono *" value={telefono} onChange={(e) => setTelefono(e.target.value)} required className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+            <input type="text" placeholder="Nombre de tu negocio" value={negocio} onChange={(e) => setNegocio(e.target.value)} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+            <input type="text" placeholder="¿Qué vendes?" value={queVende} onChange={(e) => setQueVende(e.target.value)} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+            <input type="text" placeholder="¿De dónde nos visitas? (Municipio / Estado)" value={ciudad} onChange={(e) => setCiudad(e.target.value)} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
+            <select value={productoInteres} onChange={(e) => setProductoInteres(e.target.value)} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#29ABE2]">
+              <option value="">Producto de interés</option>
+              <option value="Letras 3D">Letras 3D</option>
+              <option value="Letreros Neón">Letreros Neón</option>
+              <option value="Acrílico">Acrílico</option>
+              <option value="Glorificadores">Glorificadores</option>
+            </select>
+            <textarea placeholder="Cuéntanos más de tu proyecto (opcional)" rows={4} value={mensaje} onChange={(e) => setMensaje(e.target.value)} className="bg-[#111111] border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#29ABE2]" />
             <button type="submit" disabled={cargando} className="bg-[#F15A24] hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-4 rounded-full text-lg transition">
               {cargando ? "Enviando..." : "Enviar cotización"}
             </button>
