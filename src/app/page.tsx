@@ -30,7 +30,19 @@ export default function Home() {
   }
 
   return (
-    <main className="bg-[#1A1A1A] min-h-screen text-white">
+    <main className="bg-[#1A1A1A] min-h-screen text-white pt-20">
+
+{/* NAVBAR */}
+<nav className="fixed top-0 left-0 right-0 z-50 bg-[#111111] border-b border-gray-800 px-6 py-3 flex items-center justify-between">
+  <Image src="/LOGO.png" alt="Creative Shop 3D" width={50} height={50} />
+  <div className="hidden md:flex gap-6 text-sm font-semibold text-gray-300">
+    <a href="#servicios" className="hover:text-[#29ABE2] transition">Servicios</a>
+    <a href="#portafolio" className="hover:text-[#29ABE2] transition">Portafolio</a>
+    <a href="#cotizar" className="hover:text-[#29ABE2] transition">Cotizar</a>
+  </div>
+  <a href="https://wa.me/527711951579" target="_blank" className="bg-[#39B54A] text-white text-sm font-bold px-4 py-2 rounded-full">WhatsApp</a>
+</nav>
+
       <section className="flex flex-col items-center justify-center text-center px-6 py-20">
         <Image src="/LOGO.png" alt="Creative Shop 3D" width={220} height={220} priority />
         <h1 className="text-4xl font-bold mt-6">
@@ -43,7 +55,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-6 py-16 bg-[#111111]">
+      <section id="servicios" className="px-6 py-16 bg-[#111111]">
         <h2 className="text-3xl font-bold text-center mb-12">Nuestros <span className="text-[#F15A24]">Servicios</span></h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
@@ -60,7 +72,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-6 py-16">
+     <section id="cotizar" className="px-6 py-16">
         <h2 className="text-3xl font-bold text-center mb-10">¿Listo para <span className="text-[#39B54A]">cotizar?</span></h2>
         {enviado ? (
           <div className="max-w-lg mx-auto text-center bg-[#111111] border border-[#39B54A] rounded-2xl p-10">
