@@ -181,7 +181,7 @@ useEffect(() => {
     >
       {fotos.slice(slide * 4, slide * 4 + 4).map((foto) => (
         <div key={foto.src} onClick={() => setLightbox(foto.index)} className="relative overflow-hidden rounded-2xl aspect-square cursor-pointer group">
-          <Image src={foto.src} alt={foto.alt} fill className="object-cover group-hover:scale-105 transition duration-300" />
+          <Image src={foto.src} alt={foto.alt} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition duration-300" />
         </div>
       ))}
     </div>
