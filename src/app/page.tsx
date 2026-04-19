@@ -72,6 +72,35 @@ export default function Home() {
         </div>
       </section>
 
+<section id="portafolio" className="px-6 py-16 bg-[#111111]">
+  <h2 className="text-3xl font-bold text-center mb-12">Nuestro <span className="text-[#29ABE2]">Portafolio</span></h2>
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+    {[
+      { src: "/portafolio/p1.jpeg", alt: "Letras 3D Bienvenidos" },
+      { src: "/portafolio/p2.jpeg", alt: "Tortillería Claudia" },
+      { src: "/portafolio/p3.jpeg", alt: "MyCaze Pro" },
+      { src: "/portafolio/p4.jpeg", alt: "Todo Para Mi Cel" },
+      { src: "/portafolio/p5.jpeg", alt: "Carpintería Castelan" },
+      { src: "/portafolio/p6.jpeg", alt: "Beer Garden" },
+      { src: "/portafolio/p7.jpeg", alt: "Lucio Gastro Cantina" },
+      { src: "/portafolio/p8.jpeg", alt: "Tacos Miguelito" },
+      { src: "/portafolio/p9.jpeg", alt: "Torre Esmeralda" },
+      { src: "/portafolio/p10.jpeg", alt: "Kronos Fisioterapia" },
+      { src: "/portafolio/p11.jpeg", alt: "Barber Shop Phoenix" },
+      { src: "/portafolio/p12.jpeg", alt: "Letras industriales GCP" },
+    ].map((foto) => (
+      <div key={foto.src} className="relative overflow-hidden rounded-2xl aspect-square group">
+        <Image
+          src={foto.src}
+          alt={foto.alt}
+          fill
+          className="object-cover group-hover:scale-105 transition duration-300"
+        />
+      </div>
+    ))}
+  </div>
+</section>
+
      <section id="cotizar" className="px-6 py-16">
         <h2 className="text-3xl font-bold text-center mb-10">¿Listo para <span className="text-[#39B54A]">cotizar?</span></h2>
         {enviado ? (
