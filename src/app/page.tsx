@@ -131,8 +131,27 @@ export default function Home() {
         )}
       </section>
 
+<section className="px-6 py-16 bg-[#1A1A1A]">
+  <h2 className="text-3xl font-bold text-center mb-10">¿Dónde <span className="text-[#F15A24]">estamos?</span></h2>
+  <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden">
+    <iframe
+      src= "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3747.0466492789997!2d-98.36657692578798!3d20.090336719349516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d057e6ac943ef9%3A0x644fd142fe2c19f8!2sCreative%20Shop%203D!5e0!3m2!1ses-419!2smx!4v1776561356445!5m2!1ses-419!2smx"
+       width="100%"
+      height="450"
+      style={{ border: 0 }}
+      allowFullScreen
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+  <p className="text-center text-gray-400 mt-6">
+    📍 Tulancingo, Hidalgo · <a href="https://maps.app.goo.gl/DaUJVVUrox8zEHEx5" target="_blank" className="text-[#29ABE2] hover:underline">Ver en Google Maps</a>
+  </p>
+</section>
+
       <footer className="bg-[#111111] text-center py-8 text-gray-400 text-sm">
         <p>© 2025 Creative Shop 3D · Tulancingo, Hidalgo</p>
+<p className="mt-1">📍 <a href="https://maps.app.goo.gl/DaUJVVUrox8zEHEx5" target="_blank" className="hover:text-white transition">Ver ubicación en Google Maps</a></p>
         <a href="https://www.facebook.com/CreativeShopTulancingo" className="text-[#29ABE2] hover:underline mt-2 block" target="_blank">Facebook</a>
       </footer>
     </main>
