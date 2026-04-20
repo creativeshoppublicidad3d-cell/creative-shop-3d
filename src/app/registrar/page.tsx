@@ -73,6 +73,10 @@ export default function Registrar() {
 
   // Nuevo lead
   const [mostrarFormLead, setMostrarFormLead] = useState(false)
+  const [filtroVendedor, setFiltroVendedor] = useState('')
+const [filtroEstatus, setFiltroEstatus] = useState('')
+const [filtroProducto, setFiltroProducto] = useState('')
+const [filtroOrigen, setFiltroOrigen] = useState('')
   const [form, setForm] = useState({
     nombre: '', telefono: '', negocio: '', que_vende: '',
     ciudad: '', producto_interes: '', mensaje: '', como_llego: 'Físico'
@@ -199,6 +203,15 @@ export default function Registrar() {
   const total = leads.length
   const cerrados = leads.filter(l => l.estatus === 'cerrado').length
   const tasa = total > 0 ? Math.round((cerrados / total) * 100) : 0
+
+  // Leads filtrados
+  const leadsFiltrados = leads.filter(l => {
+    if (filtroVendedor && l.vendedor_nombre !== filtroVendedor) return false
+    if (filtroEstatus && l.estatus !== filtroEstatus) return false
+    if (filtroProducto && l.producto_interes !== filtroProducto) return false
+    if (filtroOrigen && l.como_llego !== filtroOrigen) return false
+    return true
+  })
 
   // Métricas por vendedor (solo admin)
   const vendedores = perfil?.rol === 'admin'
@@ -346,7 +359,7 @@ export default function Registrar() {
             </div>
           </div>
         )}
-        
+
         {/* Tabla comparativa admin */}
         {perfil?.rol === 'admin' && vendedores.length > 0 && (
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
@@ -428,15 +441,40 @@ export default function Registrar() {
 
         {/* Lista de leads */}
         <div className="space-y-3">
+          {/* Filtros */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <select value={filtroVendedor} onChange={e => setFiltroVendedor(e.target.value)}
+              className="bg-zinc-800 text-white rounded-lg px-3 py-2 text-xs border border-zinc-700 outline-none">
+              <option value="">Todos los vendedores</option>
+              {VENDEDORES.map(v => <option key={v}>{v}</option>)}
+            </select>
+            <select value={filtroEstatus} onChange={e => setFiltroEstatus(e.target.value)}
+              className="bg-zinc-800 text-white rounded-lg px-3 py-2 text-xs border border-zinc-700 outline-none">
+              <option value="">Todos los estatus</option>
+              {ESTATUS_LISTA.map(s => <option key={s}>{s}</option>)}
+            </select>
+            <select value={filtroProducto} onChange={e => setFiltroProducto(e.target.value)}
+              className="bg-zinc-800 text-white rounded-lg px-3 py-2 text-xs border border-zinc-700 outline-none">
+              <option value="">Todos los productos</option>
+              {PRODUCTOS.map(p => <option key={p}>{p}</option>)}
+            </select>
+            <select value={filtroOrigen} onChange={e => setFiltroOrigen(e.target.value)}
+              className="bg-zinc-800 text-white rounded-lg px-3 py-2 text-xs border border-zinc-700 outline-none">
+              <option value="">Todos los orígenes</option>
+              {COMO_LLEGO.map(c => <option key={c}>{c}</option>)}
+              <option>Web</option>
+            </select>
+          </div>
           <h2 className="font-semibold text-sm text-zinc-400">
-            {perfil?.rol === 'admin' ? 'Todos los leads' : 'Mis leads'} ({leads.length})
+            {perfil?.rol === 'admin' ? 'Todos los leads' : 'Mis leads'} ({leadsFiltrados.length})
           </h2>
-          {leads.length === 0 && (
+
+          {leadsFiltrados.length === 0 && (
             <div className="text-center py-12 text-zinc-600 text-sm">
               Sin leads registrados aún
             </div>
           )}
-          {leads.map(lead => (
+          {leadsFiltrados.map(lead => (
             <div key={lead.id} className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
