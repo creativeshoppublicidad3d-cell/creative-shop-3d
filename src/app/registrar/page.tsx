@@ -27,7 +27,21 @@ interface Perfil {
   rol: string
 }
 
+interface LeadWeb {
+  id: number
+  created_at: string
+  nombre: string
+  telefono: string
+  mensaje: string | null
+  negocio: string | null
+  que_vende: string | null
+  ciudad: string | null
+  producto_interes: string | null
+  asignado_a: string | null
+}
+
 const PRODUCTOS = ['Letras 3D', 'Neón Flex', 'Acrílico personalizado', 'Artículo decorativo', 'Otro']
+const VENDEDORES = ['Rosa Gayosso', 'Gustavo Maldonado', 'Alberto Huerta']
 const COMO_LLEGO = ['Físico', 'Recomendado', 'Redes sociales']
 const ESTATUS_LISTA: Estatus[] = ['nuevo', 'contactado', 'cotizado', 'negociando', 'cerrado', 'perdido']
 const ESTATUS_COLOR: Record<Estatus, string> = {
@@ -43,6 +57,7 @@ export default function Registrar() {
   const [vista, setVista] = useState<Vista>('login')
   const [perfil, setPerfil] = useState<Perfil | null>(null)
   const [leads, setLeads] = useState<Lead[]>([])
+  const [leadsWeb, setLeadsWeb] = useState<LeadWeb[]>([])
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
   const [exito, setExito] = useState('')
@@ -83,6 +98,15 @@ export default function Registrar() {
     if (p.rol !== 'admin') query = query.eq('vendedor_id', (await supabase.auth.getUser()).data.user?.id)
     const { data } = await query
     if (data) setLeads(data)
+
+    if (p.rol === 'admin') {
+      const { data: webData } = await supabase
+        .from('leads')
+        .select('*')
+        .is('asignado_a', null)
+        .order('created_at', { ascending: false })
+      if (webData) setLeadsWeb(webData)
+    }
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -131,6 +155,36 @@ export default function Registrar() {
 
   async function actualizarEstatus(id: string, estatus: Estatus) {
     await supabase.from('registros_vendedor').update({ estatus }).eq('id', id)
+    if (perfil) await cargarLeads(perfil)
+  }
+
+  async function asignarLead(lead: LeadWeb, vendedor: string) {
+    // Buscar el vendedor_id en perfiles
+    const { data: perfilVendedor } = await supabase
+      .from('perfiles')
+      .select('id, nombre')
+      .eq('nombre', vendedor)
+      .single()
+
+    // Copiar lead a registros_vendedor
+    await supabase.from('registros_vendedor').insert({
+      vendedor_id: perfilVendedor?.id,
+      vendedor_nombre: vendedor,
+      nombre: lead.nombre,
+      telefono: lead.telefono,
+      negocio: lead.negocio,
+      que_vende: lead.que_vende,
+      ciudad: lead.ciudad,
+      producto_interes: lead.producto_interes,
+      mensaje: lead.mensaje,
+      como_llego: 'Web',
+      estatus: 'nuevo'
+    })
+
+    // Marcar como asignado en leads
+    await supabase.from('leads').update({ asignado_a: vendedor }).eq('id', lead.id)
+
+    // Recargar
     if (perfil) await cargarLeads(perfil)
   }
 
@@ -254,6 +308,45 @@ export default function Registrar() {
           ))}
         </div>
 
+{/* Leads web sin asignar — solo admin */}
+        {perfil?.rol === 'admin' && leadsWeb.length > 0 && (
+          <div className="bg-zinc-900 rounded-xl border border-orange-500/30 overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+              <h2 className="font-semibold text-sm">Leads web sin asignar ({leadsWeb.length})</h2>
+            </div>
+            <div className="divide-y divide-zinc-800">
+              {leadsWeb.map(lead => (
+                <div key={lead.id} className="px-4 py-4 space-y-3">
+                  <div>
+                    <p className="font-semibold text-white">{lead.nombre}</p>
+                    <a href={`https://wa.me/52${lead.telefono.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
+                      className="text-green-400 text-xs hover:underline">
+                      📱 {lead.telefono}
+                    </a>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-zinc-500">
+                    {lead.producto_interes && <span>🏷️ {lead.producto_interes}</span>}
+                    {lead.ciudad && <span>📍 {lead.ciudad}</span>}
+                    {lead.negocio && <span>🏢 {lead.negocio}</span>}
+                  </div>
+                  {lead.mensaje && <p className="text-zinc-400 text-xs">{lead.mensaje}</p>}
+                  <div>
+                    <label className="text-zinc-500 text-xs mb-1 block">Asignar a vendedor</label>
+                    <select
+                      defaultValue=""
+                      onChange={e => { if (e.target.value) asignarLead(lead, e.target.value) }}
+                      className="bg-zinc-800 text-white rounded-lg px-3 py-2 text-xs border border-zinc-700 outline-none">
+                      <option value="">Seleccionar...</option>
+                      {VENDEDORES.map(v => <option key={v}>{v}</option>)}
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         {/* Tabla comparativa admin */}
         {perfil?.rol === 'admin' && vendedores.length > 0 && (
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
