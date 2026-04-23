@@ -388,6 +388,12 @@ async function handleNuevoLead(e: React.FormEvent) {
                       <option value="">Seleccionar...</option>
                       {VENDEDORES.map(v => <option key={v}>{v}</option>)}
                     </select>
+
+                    <button
+  onClick={() => handleEliminarLead(lead.id.toString())}
+  className="mt-2 w-full bg-red-900/40 hover:bg-red-900/70 text-red-400 text-xs py-2 rounded-lg transition">
+  🗑️ Eliminar lead
+</button>
                   </div>
                 </div>
               ))}
