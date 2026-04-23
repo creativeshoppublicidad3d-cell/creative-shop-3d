@@ -16,9 +16,11 @@ interface Lead {
   ciudad: string | null
   producto_interes: string | null
   mensaje: string | null
-  como_llego: string
+  como_llego: string | null
   estatus: Estatus
   vendedor_nombre: string | null
+  vendedor_id: string | null
+  asignado_a: string | null
 }
 
 interface Perfil {
@@ -97,8 +99,8 @@ const [filtroOrigen, setFiltroOrigen] = useState('')
     }
   }
 
-  async function cargarLeads(p: Perfil) {
-    let query = supabase.from('registros_vendedor').select('*').order('created_at', { ascending: false })
+async function cargarLeads(p: Perfil) {
+    let query = supabase.from('leads').select('*').order('created_at', { ascending: false })
     if (p.rol !== 'admin') query = query.eq('vendedor_id', (await supabase.auth.getUser()).data.user?.id)
     const { data } = await query
     if (data) setLeads(data)
@@ -142,28 +144,24 @@ async function handleNuevoLead(e: React.FormEvent) {
     setCargando(true)
     setError('')
     const { data: { user } } = await supabase.auth.getUser()
-    
-    const { error: err } = await supabase.from('registros_vendedor').insert({
+    const { error: err } = await supabase.from('leads').insert({
       ...form,
       vendedor_id: user?.id,
       vendedor_nombre: perfil?.nombre,
-      estatus: 'nuevo'
-    })
-    if (err) { setError('Error al guardar. Intenta de nuevo.'); setCargando(false); return }
-
-    await supabase.from('leads').insert({
-      nombre: form.nombre,
-      telefono: form.telefono,
-      negocio: form.negocio,
-      que_vende: form.que_vende,
-      ciudad: form.ciudad,
-      producto_interes: form.producto_interes,
-      mensaje: form.mensaje,
+      estatus: 'nuevo',
       asignado_a: perfil?.nombre
     })
+    if (err) { setError('Error al guardar. Intenta de nuevo.'); setCargando(false); return }
+    setExito('✅ Lead registrado correctamente')
+    setForm({ nombre: '', telefono: '', negocio: '', que_vende: '', ciudad: '', producto_interes: '', mensaje: '', como_llego: 'Físico' })
+    setMostrarFormLead(false)
+    if (perfil) await cargarLeads(perfil)
+    setCargando(false)
+    setTimeout(() => setExito(''), 3000)
+  }
 
-  async function actualizarEstatus(id: string, estatus: Estatus) {
-    await supabase.from('registros_vendedor').update({ estatus }).eq('id', id)
+ async function actualizarEstatus(id: string, estatus: Estatus) {
+    await supabase.from('leads').update({ estatus }).eq('id', id)
     if (perfil) await cargarLeads(perfil)
   }
 
