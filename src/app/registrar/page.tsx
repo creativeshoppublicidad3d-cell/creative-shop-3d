@@ -137,11 +137,12 @@ const [filtroOrigen, setFiltroOrigen] = useState('')
     setCargando(false)
   }
 
-  async function handleNuevoLead(e: React.FormEvent) {
+async function handleNuevoLead(e: React.FormEvent) {
     e.preventDefault()
     setCargando(true)
     setError('')
     const { data: { user } } = await supabase.auth.getUser()
+    
     const { error: err } = await supabase.from('registros_vendedor').insert({
       ...form,
       vendedor_id: user?.id,
@@ -149,13 +150,17 @@ const [filtroOrigen, setFiltroOrigen] = useState('')
       estatus: 'nuevo'
     })
     if (err) { setError('Error al guardar. Intenta de nuevo.'); setCargando(false); return }
-    setExito('✅ Lead registrado correctamente')
-    setForm({ nombre: '', telefono: '', negocio: '', que_vende: '', ciudad: '', producto_interes: '', mensaje: '', como_llego: 'Físico' })
-    setMostrarFormLead(false)
-    if (perfil) await cargarLeads(perfil)
-    setCargando(false)
-    setTimeout(() => setExito(''), 3000)
-  }
+
+    await supabase.from('leads').insert({
+      nombre: form.nombre,
+      telefono: form.telefono,
+      negocio: form.negocio,
+      que_vende: form.que_vende,
+      ciudad: form.ciudad,
+      producto_interes: form.producto_interes,
+      mensaje: form.mensaje,
+      asignado_a: perfil?.nombre
+    })
 
   async function actualizarEstatus(id: string, estatus: Estatus) {
     await supabase.from('registros_vendedor').update({ estatus }).eq('id', id)
