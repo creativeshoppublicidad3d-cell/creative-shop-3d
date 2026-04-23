@@ -205,20 +205,21 @@ async function handleNuevoLead(e: React.FormEvent) {
       .eq('nombre', vendedor)
       .single()
 
-    // Copiar lead a registros_vendedor
-    await supabase.from('registros_vendedor').insert({
+  async function asignarLead(lead: LeadWeb, vendedor: string) {
+    const { data: perfilVendedor } = await supabase
+      .from('perfiles')
+      .select('id, nombre')
+      .eq('nombre', vendedor)
+      .single()
+
+    await supabase.from('leads').update({ 
+      asignado_a: vendedor,
       vendedor_id: perfilVendedor?.id,
-      vendedor_nombre: vendedor,
-      nombre: lead.nombre,
-      telefono: lead.telefono,
-      negocio: lead.negocio,
-      que_vende: lead.que_vende,
-      ciudad: lead.ciudad,
-      producto_interes: lead.producto_interes,
-      mensaje: lead.mensaje,
-      como_llego: 'Web',
-      estatus: 'nuevo'
-    })
+      vendedor_nombre: vendedor
+    }).eq('id', lead.id)
+
+    if (perfil) await cargarLeads(perfil)
+  }
 
     // Marcar como asignado en leads
     await supabase.from('leads').update({ asignado_a: vendedor }).eq('id', lead.id)
