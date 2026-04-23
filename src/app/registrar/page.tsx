@@ -75,6 +75,8 @@ export default function Registrar() {
 
   // Nuevo lead
   const [mostrarFormLead, setMostrarFormLead] = useState(false)
+  const [leadEditando, setLeadEditando] = useState<Lead | null>(null)
+const [mostrarFormEditar, setMostrarFormEditar] = useState(false)
   const [filtroVendedor, setFiltroVendedor] = useState('')
 const [filtroEstatus, setFiltroEstatus] = useState('')
 const [filtroProducto, setFiltroProducto] = useState('')
@@ -162,6 +164,36 @@ async function handleNuevoLead(e: React.FormEvent) {
 
  async function actualizarEstatus(id: string, estatus: Estatus) {
     await supabase.from('leads').update({ estatus }).eq('id', id)
+    if (perfil) await cargarLeads(perfil)
+  }
+
+  async function handleEditarLead(e: React.FormEvent) {
+    e.preventDefault()
+    if (!leadEditando) return
+    setCargando(true)
+    setError('')
+    const { error: err } = await supabase.from('leads').update({
+      nombre: leadEditando.nombre,
+      telefono: leadEditando.telefono,
+      negocio: leadEditando.negocio,
+      que_vende: leadEditando.que_vende,
+      ciudad: leadEditando.ciudad,
+      producto_interes: leadEditando.producto_interes,
+      mensaje: leadEditando.mensaje,
+      como_llego: leadEditando.como_llego,
+    }).eq('id', leadEditando.id)
+    if (err) { setError('Error al actualizar.'); setCargando(false); return }
+    setExito('✅ Lead actualizado correctamente')
+    setMostrarFormEditar(false)
+    setLeadEditando(null)
+    if (perfil) await cargarLeads(perfil)
+    setCargando(false)
+    setTimeout(() => setExito(''), 3000)
+  }
+
+  async function handleEliminarLead(id: string) {
+    if (!confirm('¿Seguro que quieres eliminar este lead?')) return
+    await supabase.from('leads').delete().eq('id', id)
     if (perfil) await cargarLeads(perfil)
   }
 
@@ -386,6 +418,66 @@ async function handleNuevoLead(e: React.FormEvent) {
           </div>
         )}
 
+
+{mostrarFormEditar && leadEditando && (
+  <form onSubmit={handleEditarLead} className="bg-zinc-900 rounded-2xl p-5 border border-orange-500/30 space-y-4">
+    <h2 className="font-semibold text-sm text-orange-400">Editando: {leadEditando.nombre}</h2>
+    {error && <p className="text-red-400 text-xs">{error}</p>}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {[
+        { label: 'Nombre *', key: 'nombre', required: true },
+        { label: 'Teléfono *', key: 'telefono', required: true },
+        { label: 'Negocio', key: 'negocio', required: false },
+        { label: '¿Qué vende?', key: 'que_vende', required: false },
+        { label: 'Ciudad', key: 'ciudad', required: false },
+      ].map(f => (
+        <div key={f.key}>
+          <label className="text-zinc-400 text-xs mb-1 block">{f.label}</label>
+          <input type="text"
+            value={leadEditando[f.key as keyof Lead] as string || ''}
+            onChange={e => setLeadEditando({ ...leadEditando, [f.key]: e.target.value })}
+            required={f.required}
+            className="w-full bg-zinc-800 text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-orange-500 border border-zinc-700" />
+        </div>
+      ))}
+      <div>
+        <label className="text-zinc-400 text-xs mb-1 block">Producto de interés</label>
+        <select value={leadEditando.producto_interes || ''}
+          onChange={e => setLeadEditando({ ...leadEditando, producto_interes: e.target.value })}
+          className="w-full bg-zinc-800 text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-orange-500 border border-zinc-700">
+          <option value="">Seleccionar...</option>
+          {PRODUCTOS.map(p => <option key={p}>{p}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="text-zinc-400 text-xs mb-1 block">¿Cómo llegó?</label>
+        <select value={leadEditando.como_llego || ''}
+          onChange={e => setLeadEditando({ ...leadEditando, como_llego: e.target.value })}
+          className="w-full bg-zinc-800 text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-orange-500 border border-zinc-700">
+          {COMO_LLEGO.map(c => <option key={c}>{c}</option>)}
+        </select>
+      </div>
+    </div>
+    <div>
+      <label className="text-zinc-400 text-xs mb-1 block">Notas</label>
+      <textarea value={leadEditando.mensaje || ''}
+        onChange={e => setLeadEditando({ ...leadEditando, mensaje: e.target.value })} rows={3}
+        className="w-full bg-zinc-800 text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-orange-500 border border-zinc-700 resize-none" />
+    </div>
+    <div className="flex gap-3">
+      <button type="submit" disabled={cargando}
+        className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-sm transition disabled:opacity-50">
+        {cargando ? 'Guardando...' : 'Guardar cambios'}
+      </button>
+      <button type="button" onClick={() => { setMostrarFormEditar(false); setLeadEditando(null) }}
+        className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-lg text-sm transition">
+        Cancelar
+      </button>
+    </div>
+  </form>
+)}
+
+{/* Botón nuevo lead */}
         {/* Botón nuevo lead */}
         {exito && <p className="text-green-400 text-sm text-center">{exito}</p>}
         <button onClick={() => setMostrarFormLead(!mostrarFormLead)}
@@ -500,6 +592,20 @@ async function handleNuevoLead(e: React.FormEvent) {
               {lead.mensaje && <p className="text-zinc-400 text-xs">{lead.mensaje}</p>}
               <div>
                 <label className="text-zinc-500 text-xs mb-1 block">Actualizar estatus</label>
+
+                <div className="flex gap-2 pt-1">
+  <button
+    onClick={() => { setLeadEditando(lead); setMostrarFormEditar(true); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+    className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs py-2 rounded-lg transition">
+    ✏️ Editar
+  </button>
+  <button
+    onClick={() => handleEliminarLead(lead.id)}
+    className="flex-1 bg-red-900/40 hover:bg-red-900/70 text-red-400 text-xs py-2 rounded-lg transition">
+    🗑️ Eliminar
+  </button>
+</div>
+
                 <select value={lead.estatus}
                   onChange={e => actualizarEstatus(lead.id, e.target.value as Estatus)}
                   className="bg-zinc-800 text-white rounded-lg px-3 py-2 text-xs border border-zinc-700 outline-none">
