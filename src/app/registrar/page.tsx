@@ -198,14 +198,6 @@ async function handleNuevoLead(e: React.FormEvent) {
   }
 
   async function asignarLead(lead: LeadWeb, vendedor: string) {
-    // Buscar el vendedor_id en perfiles
-    const { data: perfilVendedor } = await supabase
-      .from('perfiles')
-      .select('id, nombre')
-      .eq('nombre', vendedor)
-      .single()
-
-  async function asignarLead(lead: LeadWeb, vendedor: string) {
     const { data: perfilVendedor } = await supabase
       .from('perfiles')
       .select('id, nombre')
@@ -218,13 +210,6 @@ async function handleNuevoLead(e: React.FormEvent) {
       vendedor_nombre: vendedor
     }).eq('id', lead.id)
 
-    if (perfil) await cargarLeads(perfil)
-  }
-
-    // Marcar como asignado en leads
-    await supabase.from('leads').update({ asignado_a: vendedor }).eq('id', lead.id)
-
-    // Recargar
     if (perfil) await cargarLeads(perfil)
   }
 
