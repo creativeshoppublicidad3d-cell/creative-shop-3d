@@ -172,16 +172,17 @@ async function handleNuevoLead(e: React.FormEvent) {
     if (!leadEditando) return
     setCargando(true)
     setError('')
-    const { error: err } = await supabase.from('leads').update({
-      nombre: leadEditando.nombre,
-      telefono: leadEditando.telefono,
-      negocio: leadEditando.negocio,
-      que_vende: leadEditando.que_vende,
-      ciudad: leadEditando.ciudad,
-      producto_interes: leadEditando.producto_interes,
-      mensaje: leadEditando.mensaje,
-      como_llego: leadEditando.como_llego,
-    }).eq('id', leadEditando.id)
+const { error: err } = await supabase.from('leads').update({
+  nombre: leadEditando.nombre,
+  telefono: leadEditando.telefono,
+  negocio: leadEditando.negocio,
+  que_vende: leadEditando.que_vende,
+  ciudad: leadEditando.ciudad,
+  producto_interes: leadEditando.producto_interes,
+  mensaje: leadEditando.mensaje,
+  como_llego: leadEditando.como_llego,
+  ultima_edicion: new Date().toISOString(),
+}).eq('id', leadEditando.id)
     if (err) { setError('Error al actualizar.'); setCargando(false); return }
     setExito('✅ Lead actualizado correctamente')
     setMostrarFormEditar(false)
