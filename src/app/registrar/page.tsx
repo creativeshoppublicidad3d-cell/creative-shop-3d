@@ -183,7 +183,12 @@ const { error: err } = await supabase.from('leads').update({
   como_llego: leadEditando.como_llego,
   ultima_edicion: new Date().toISOString(),
 }).eq('id', leadEditando.id)
-    if (err) { setError('Error al actualizar.'); setCargando(false); return }
+    if (err) { 
+  console.log('Error Supabase:', err)
+  setError('Error al actualizar: ' + err.message)
+  setCargando(false)
+  return 
+}
     setExito('✅ Lead actualizado correctamente')
     setMostrarFormEditar(false)
     setLeadEditando(null)
