@@ -85,6 +85,7 @@ const [filtroOrigen, setFiltroOrigen] = useState('')
     nombre: '', telefono: '', negocio: '', que_vende: '',
     ciudad: '', producto_interes: '', mensaje: '', como_llego: 'Físico'
   })
+  const [leadExistente, setLeadExistente] = useState<Lead | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -226,6 +227,39 @@ async function handleEditarLead(e: React.FormEvent) {
     setExito('✅ Lead actualizado correctamente')
     setMostrarFormEditar(false)
     setLeadEditando(null)
+    if (perfil) await cargarLeads(perfil)
+    setCargando(false)
+    setTimeout(() => setExito(''), 3000)
+  }
+
+async function handleConfirmarActualizar() {
+    if (!leadExistente) return
+    setCargando(true)
+
+    const normalizarTelefono = (tel: string): string => {
+      tel = tel.replace(/\D/g, '')
+      if (tel.startsWith('521') && tel.length === 13) return tel.slice(3)
+      if (tel.startsWith('1') && tel.length === 11) return tel
+      if (tel.length === 10) return tel
+      return tel
+    }
+
+    const { error: err } = await supabase.from('leads').update({
+      nombre: form.nombre,
+      negocio: form.negocio,
+      que_vende: form.que_vende,
+      ciudad: form.ciudad,
+      producto_interes: form.producto_interes,
+      mensaje: form.mensaje,
+      como_llego: form.como_llego,
+      ultima_edicion: new Date().toISOString(),
+    }).eq('telefono', normalizarTelefono(form.telefono))
+
+    if (err) { setError('Error al actualizar.'); setCargando(false); return }
+    setExito('✅ Lead actualizado correctamente')
+    setLeadExistente(null)
+    setForm({ nombre: '', telefono: '', negocio: '', que_vende: '', ciudad: '', producto_interes: '', mensaje: '', como_llego: 'Físico' })
+    setMostrarFormLead(false)
     if (perfil) await cargarLeads(perfil)
     setCargando(false)
     setTimeout(() => setExito(''), 3000)
@@ -508,6 +542,30 @@ async function handleEditarLead(e: React.FormEvent) {
     </div>
   </form>
 )}
+
+{leadExistente && (
+  <div className="bg-yellow-900/30 border border-yellow-500/40 rounded-xl p-4 space-y-3">
+    <p className="text-yellow-400 text-sm font-semibold">⚠️ Este número ya está registrado</p>
+    <div className="text-xs text-zinc-400 space-y-1">
+      <p><span className="text-zinc-300">Nombre:</span> {leadExistente.nombre}</p>
+      <p><span className="text-zinc-300">Estatus:</span> {leadExistente.estatus}</p>
+      <p><span className="text-zinc-300">Asignado a:</span> {leadExistente.vendedor_nombre || 'Sin asignar'}</p>
+      {leadExistente.producto_interes && <p><span className="text-zinc-300">Producto:</span> {leadExistente.producto_interes}</p>}
+    </div>
+    <p className="text-zinc-400 text-xs">¿Quieres actualizar sus datos con la información que acabas de ingresar?</p>
+    <div className="flex gap-3">
+      <button onClick={handleConfirmarActualizar} disabled={cargando}
+        className="flex-1 bg-yellow-600 hover:bg-yellow-500 text-white text-xs font-semibold py-2.5 rounded-lg transition disabled:opacity-50">
+        {cargando ? 'Actualizando...' : '✅ Sí, actualizar'}
+      </button>
+      <button onClick={() => setLeadExistente(null)}
+        className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2.5 rounded-lg transition">
+        ❌ Cancelar
+      </button>
+    </div>
+  </div>
+)}
+
 
 {/* Botón nuevo lead */}
         {/* Botón nuevo lead */}
