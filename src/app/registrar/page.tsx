@@ -145,9 +145,24 @@ async function handleNuevoLead(e: React.FormEvent) {
     e.preventDefault()
     setCargando(true)
     setError('')
+
+    // Normalizar teléfono
+    const normalizarTelefono = (tel: string): string => {
+      tel = tel.replace(/\D/g, '')
+      if (tel.startsWith('521') && tel.length === 13) return tel.slice(3)
+      if (tel.startsWith('1') && tel.length === 11) return tel
+      if (tel.length === 10) return tel
+      return tel
+    }
+
+    const formNormalizado = {
+      ...form,
+      telefono: normalizarTelefono(form.telefono)
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
     const { error: err } = await supabase.from('leads').insert({
-      ...form,
+      ...formNormalizado,
       vendedor_id: user?.id,
       vendedor_nombre: perfil?.nombre,
       estatus: 'nuevo',
@@ -167,28 +182,37 @@ async function handleNuevoLead(e: React.FormEvent) {
     if (perfil) await cargarLeads(perfil)
   }
 
-  async function handleEditarLead(e: React.FormEvent) {
+async function handleEditarLead(e: React.FormEvent) {
     e.preventDefault()
     if (!leadEditando) return
     setCargando(true)
     setError('')
-const { error: err } = await supabase.from('leads').update({
-  nombre: leadEditando.nombre,
-  telefono: leadEditando.telefono,
-  negocio: leadEditando.negocio,
-  que_vende: leadEditando.que_vende,
-  ciudad: leadEditando.ciudad,
-  producto_interes: leadEditando.producto_interes,
-  mensaje: leadEditando.mensaje,
-  como_llego: leadEditando.como_llego,
-  ultima_edicion: new Date().toISOString(),
-}).eq('id', leadEditando.id)
+
+    const normalizarTelefono = (tel: string): string => {
+      tel = tel.replace(/\D/g, '')
+      if (tel.startsWith('521') && tel.length === 13) return tel.slice(3)
+      if (tel.startsWith('1') && tel.length === 11) return tel
+      if (tel.length === 10) return tel
+      return tel
+    }
+
+    const { error: err } = await supabase.from('leads').update({
+      nombre: leadEditando.nombre,
+      telefono: normalizarTelefono(leadEditando.telefono),
+      negocio: leadEditando.negocio,
+      que_vende: leadEditando.que_vende,
+      ciudad: leadEditando.ciudad,
+      producto_interes: leadEditando.producto_interes,
+      mensaje: leadEditando.mensaje,
+      como_llego: leadEditando.como_llego,
+      ultima_edicion: new Date().toISOString(),
+    }).eq('id', leadEditando.id)
     if (err) { 
-  console.log('Error Supabase:', err)
-  setError('Error al actualizar: ' + err.message)
-  setCargando(false)
-  return 
-}
+      console.log('Error Supabase:', err)
+      setError('Error al actualizar: ' + err.message)
+      setCargando(false)
+      return 
+    }
     setExito('✅ Lead actualizado correctamente')
     setMostrarFormEditar(false)
     setLeadEditando(null)
