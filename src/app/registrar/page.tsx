@@ -146,7 +146,6 @@ async function handleNuevoLead(e: React.FormEvent) {
     setCargando(true)
     setError('')
 
-    // Normalizar teléfono
     const normalizarTelefono = (tel: string): string => {
       tel = tel.replace(/\D/g, '')
       if (tel.startsWith('521') && tel.length === 13) return tel.slice(3)
@@ -155,11 +154,22 @@ async function handleNuevoLead(e: React.FormEvent) {
       return tel
     }
 
-    const formNormalizado = {
-      ...form,
-      telefono: normalizarTelefono(form.telefono)
+    const telefonoNormalizado = normalizarTelefono(form.telefono)
+
+    // Verificar si el teléfono ya existe
+    const { data: existente } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('telefono', telefonoNormalizado)
+      .single()
+
+    if (existente) {
+      setLeadExistente(existente)
+      setCargando(false)
+      return
     }
 
+    const formNormalizado = { ...form, telefono: telefonoNormalizado }
     const { data: { user } } = await supabase.auth.getUser()
     const { error: err } = await supabase.from('leads').insert({
       ...formNormalizado,
