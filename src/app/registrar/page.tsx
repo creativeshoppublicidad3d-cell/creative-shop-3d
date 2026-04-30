@@ -157,18 +157,18 @@ async function handleNuevoLead(e: React.FormEvent) {
 
     const telefonoNormalizado = normalizarTelefono(form.telefono)
 
-    // Verificar si el teléfono ya existe
-    const { data: existente } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('telefono', telefonoNormalizado)
-      .single()
+// Verificar si el teléfono ya existe
+const { data: existentes } = await supabase
+  .from('leads')
+  .select('*')
+  .eq('telefono', telefonoNormalizado)
+  .limit(1)
 
-    if (existente) {
-      setLeadExistente(existente)
-      setCargando(false)
-      return
-    }
+if (existentes && existentes.length > 0) {
+  setLeadExistente(existentes[0])
+  setCargando(false)
+  return
+}
 
     const formNormalizado = { ...form, telefono: telefonoNormalizado }
     const { data: { user } } = await supabase.auth.getUser()
