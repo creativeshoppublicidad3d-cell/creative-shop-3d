@@ -267,7 +267,22 @@ async function handleConfirmarActualizar() {
 
   async function handleEliminarLead(id: string) {
     if (!confirm('¿Seguro que quieres eliminar este lead?')) return
+    
+    // Obtener el teléfono del lead antes de borrarlo
+    const { data: lead } = await supabase
+      .from('leads')
+      .select('telefono')
+      .eq('id', id)
+      .single()
+    
+    // Borrar el lead
     await supabase.from('leads').delete().eq('id', id)
+    
+    // Borrar historial de conversaciones del mismo teléfono
+    if (lead?.telefono) {
+      await supabase.from('conversaciones').delete().eq('telefono', lead.telefono)
+    }
+    
     if (perfil) await cargarLeads(perfil)
   }
 
